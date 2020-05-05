@@ -7,23 +7,27 @@
   sshOptions:
     UserKnownHostsFile: /dev/null
     StrictHostKeyChecking: no
+  rsync_src: /tmp/build
 
-stage.customer.tld:
+stage.customer.tld: &remote_base
   <<: *base
   hostname: 10.0.0.1
-  user: user
+  user: deploy
+  http_user: www-data
   stage: staging
   branch: staging
-  shop_host: stage.customer.tld
+  cachetool: /var/run/php5-fpm.sock
+  rsync_src: /tmp/build
   deploy_path: /var/www/stage.customer.tld
-  shop_name: DEV!!!
-  shop_title: DEV!!!
-  shop_path: ""
-  
+  rsync_dest: '{{release_path}}'
+
 www.customer.tld:
-  <<: *base
+  <<: *remote_base
   hostname: 10.0.0.2
-  user: user
+  user: deploy
+  http_user: www-data
   stage: production
   branch: master
+  cachetool: /var/run/php5-fpm.sock
   deploy_path: /var/www/www.customer.tld
+  rsync_dest: '{{release_path}}'

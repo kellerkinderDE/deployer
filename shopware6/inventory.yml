@@ -1,0 +1,31 @@
+.base: &base
+  roles:
+    - app
+  port: 22
+  forwardAgent: true
+  composer_options: install --verbose --prefer-dist --no-progress --no-interaction --no-dev --optimize-autoloader --no-scripts
+  sshOptions:
+    UserKnownHostsFile: /dev/null
+    StrictHostKeyChecking: no
+
+stage.customer.tld: &remote_base
+  <<: *base
+  hostname: stage.customer.tld
+  user: deploy
+  stage: staging
+  branch: staging
+  cachetool: /var/run/php5-fpm.sock
+  deploy_path: /var/www/stage.customer.tld
+  rsync_src: '{{shopware_build_path}}'
+  rsync_dest: '{{release_path}}'
+
+www.customer.tld:
+  <<: *remote_base
+  hostname: 10.0.0.2
+  user: deploy
+  stage: production
+  branch: master
+  cachetool: /var/run/php5-fpm.sock
+  deploy_path: /var/www/www.customer.tld
+  rsync_src: '{{shopware_build_path}}'
+  rsync_dest: '{{release_path}}'
